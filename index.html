@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lalalaal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .kalpler {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .kalp {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0;
+            animation: ucus 6s linear infinite;
+            color: #ff3366;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        @keyframes ucus {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .icerik {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .yazi-kutusu {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        h1 {
+            font-size: 4rem;
+            color: white;
+            text-shadow: 3px 3px 10px rgba(255, 51, 102, 0.5);
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .soru {
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        .butonlar {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .buton {
+            padding: 15px 40px;
+            font-size: 1.8rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-weight: bold;
+        }
+
+        .buton-evet {
+            background: #ff3366;
+            color: white;
+            box-shadow: 0 5px 20px rgba(255, 51, 102, 0.4);
+        }
+
+        .buton-evet:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(255, 51, 102, 0.6);
+        }
+
+        .buton-hayir {
+            background: #ccc;
+            color: #666;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .buton-hayir:hover {
+            background: #ff3366;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .mesaj {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            text-align: center;
+        }
+
+        .mesaj h2 {
+            font-size: 3rem;
+            color: #ff3366;
+            margin-bottom: 20px;
+        }
+
+        .mesaj p {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #ff3366;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            .soru {
+                font-size: 1.8rem;
+            }
+            .buton {
+                padding: 10px 25px;
+                font-size: 1.3rem;
+            }
+            .yazi-kutusu {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+        }
+    </style>
+    <!-- EmailJS kütüphanesi -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body>
+    <div class="kalpler" id="kalpler"></div>
+
+    <div class="icerik">
+        <div class="yazi-kutusu" id="anaSayfa">
+            <h1>💕💕</h1>
+            <div class="soru">
+                Beni Seviyor musun?
+            </div>
+            <div class="butonlar">
+                <button class="buton buton-evet" onclick="evetMailGonder()">EVET ❤️</button>
+                <button class="buton buton-hayir" onclick="hayirMailGonder()">HAYIR 💔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Başarılı gönderim mesajı -->
+    <div class="mesaj" id="basariMesaj">
+        <h2 id="basariBaslik">💖 Mesaj Gönderildi! 💖</h2>
+        <p id="basariMetin">😘</p>
+        <button class="buton buton-evet" onclick="kapatMesaj()" style="font-size: 1.2rem; padding: 10px 30px; margin-top: 20px;">Kapat</button>
+    </div>
+
+    <!-- Yükleniyor mesajı -->
+    <div class="mesaj" id="yukleniyorMesaj">
+        <h2>💌 Gönderiliyor...</h2>
+        <div class="loading"></div>
+        <p>Mesajın yolda...</p>
+    </div>
+
+    <script>
+        // EmailJS'yi başlat - BURAYA KENDİ PUBLIC KEY'İNİZİ YAZIN
+        (function() {
+            emailjs.init("u31rz8eh6qQwASA5X"); // EmailJS'den alacağınız public key
+        })();
+
+        // Uçuşan kalpler
+        function kalpOlustur() {
+            const kalpler = document.getElementById('kalpler');
+            const kalp = document.createElement('div');
+            kalp.classList.add('kalp');
+            
+            const kalplerArray = ['❤️', '💖', '💗', '💓', '💕', '💞', '💘', '💝'];
+            const rastgeleKalp = kalplerArray[Math.floor(Math.random() * kalplerArray.length)];
+            kalp.innerHTML = rastgeleKalp;
+            
+            kalp.style.left = Math.random() * 100 + '%';
+            kalp.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            kalp.style.fontSize = (Math.random() * 30 + 20) + 'px';
+            
+            kalpler.appendChild(kalp);
+            
+            setTimeout(() => {
+                kalp.remove();
+            }, 6000);
+        }
+
+        setInterval(kalpOlustur, 300);
+
+        // SEVGİLİNİN SABİT MAİL ADRESİ - BURAYI KENDİ MAİLİNLE DEĞİŞTİR!
+        const SEVGILININ_MAILI = "pinarguler020@gmail.com"; // <--- BURAYI DEĞİŞTİR
+
+        // EVET butonuna tıklandı - MAİL GİDECEK
+        function evetMailGonder() {
+            // Yükleniyor mesajını göster
+            document.getElementById('yukleniyorMesaj').style.display = 'block';
+
+            // EmailJS ile mail gönderme - BURAYA KENDİ ID'LERİNİZİ YAZIN
+            emailjs.send("service_1", "template_3ed5mhu", {
+                to_email: SEVGILININ_MAILI,        // SABİT MAİL ADRESİ
+                from_name: "Rüveyde",
+                message: " Ben de seni çok seviyorum! ❤️"
+            }).then(function(response) {
+                document.getElementById('yukleniyorMesaj').style.display = 'none';
+                document.getElementById('basariBaslik').innerHTML =". ";
+                document.getElementById('basariMetin').innerHTML = "Sana bir mesaj gönderdimm";
+                document.getElementById('basariMesaj').style.display = 'block';
+                
+                // Bol bol kalp yağdır
+                for(let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        kalpOlustur();
+                    }, i * 30);
+                }
+            }, function(error) {
+                document.getElementById('yukleniyorMesaj').style.display = 'none';
+                alert('Bir hata oluştu. Ama yine de seni öptüm! 😘');
+                console.log('Hata:', error);
+            });
+        }
+
+        // HAYIR butonuna tıklandı - yine de MAİL GİDECEK
+        function hayirMailGonder() {
+            // Yükleniyor mesajını göster
+            document.getElementById('yukleniyorMesaj').style.display = 'block';
+
+            // EmailJS ile mail gönderme - BURAYA KENDİ ID'LERİNİZİ YAZIN
+            emailjs.send("service_1", "template_3ed5mhu", {
+                to_email: SEVGILININ_MAILI,        // SABİT MAİL ADRESİ
+                from_name: "💔",
+                message: "HAYIR dedin ama ben yine de seni çok seviyorum! 💔"
+            }).then(function(response) {
+                document.getElementById('yukleniyorMesaj').style.display = 'none';
+                document.getElementById('basariBaslik').innerHTML = "💔 MESAJ GÖNDERİLDİ! 💔";
+                document.getElementById('basariMetin').innerHTML = "üzdünnn :(";
+                document.getElementById('basariMesaj').style.display = 'block';
+                
+                // Biraz kalp yağdır (ama daha az)
+                for(let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        kalpOlustur();
+                    }, i * 50);
+                }
+            }, function(error) {
+                document.getElementById('yukleniyorMesaj').style.display = 'none';
+                alert('Bir hata oluştu. Ama yine de seni öptüm! 😘');
+                console.log('Hata:', error);
+            });
+        }
+
+        function kapatMesaj() {
+            document.getElementById('basariMesaj').style.display = 'none';
+        }
+
+        // HAYIR butonuna tıklandığında ekstra efekt (ama mail de gidecek)
+        function hayirTiklandi() {
+            hayirMailGonder(); // Mail gönder
+        }
+    </script>
+</body>
+</html>
